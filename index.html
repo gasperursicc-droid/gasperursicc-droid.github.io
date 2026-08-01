@@ -214,7 +214,11 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
 <script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js";
+  let workerReady = fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js")
+    .then(r => r.blob())
+    .then(blob => {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+    });
 
   const files = {
     si: "Portfolijo.si.pdf",
@@ -272,7 +276,7 @@
     renderPdf(files[lang]);
   }
 
-  setLang('si');
+  workerReady.then(() => setLang('si'));
 </script>
 
 </body>
