@@ -6,7 +6,7 @@
 <title>Gašper Uršič — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #14150f;
@@ -28,10 +28,39 @@
 
   .topbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     padding: 1rem clamp(1.25rem, 6vw, 4rem);
     border-bottom: 1px solid var(--line);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .tabs button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    padding: 0.4rem 0;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .tabs button:hover { color: var(--ink); }
+
+  .tabs button.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
   }
 
   .lang-switch {
@@ -64,11 +93,16 @@
     color: #ffffff;
   }
 
-  .lang-switch button:focus-visible {
+  .lang-switch button:focus-visible,
+  .tabs button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* PORTFOLIJO PANEL */
   .cover-text {
     padding: clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 6vw, 4rem) 1rem;
   }
@@ -157,21 +191,137 @@
     border-bottom: 1px solid var(--accent);
   }
 
-  footer {
-    border-top: 1px solid var(--line);
-    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 6vw, 4rem);
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.7;
+  /* ŽIVLJENJEPIS PANEL */
+  .cv-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 6vw, 2rem);
   }
 
-  footer .footer-name {
+  .cv-wrap h2 {
+    font-size: clamp(2.2rem, 8vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0 0 2rem;
+  }
+
+  .cv-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  .cv-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+
+  .cv-about h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 0 0 0.7rem;
+  }
+
+  .cv-about p {
+    font-size: 0.9rem;
+    line-height: 1.65;
     color: var(--ink);
-    font-weight: 600;
+    margin: 0;
+  }
+
+  .cv-contact-block {
+    margin-bottom: 2rem;
+  }
+
+  .cv-contact-block p {
+    margin: 0.15rem 0;
+    font-size: 0.95rem;
+  }
+
+  .cv-name-line {
+    font-weight: 700;
+    font-size: 1.1rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .cv-section {
+    margin-bottom: 2rem;
+  }
+
+  .cv-section h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 0 0 0.8rem;
+  }
+
+  .cv-line {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0.25rem 0;
+  }
+
+  @media (max-width: 780px) {
+    .cv-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* KONTAKT PANEL */
+  .contact-wrap {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1.25rem, 6vw, 2rem);
+    text-align: center;
+  }
+
+  .contact-wrap h2 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0 0 2rem;
+  }
+
+  .contact-wrap p {
+    font-size: 1.05rem;
+    margin: 0.5rem 0;
+  }
+
+  .contact-wrap a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
   }
 
   @media (max-width: 640px) {
+    .topbar {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .tabs {
+      width: 100%;
+      justify-content: center;
+      gap: 1rem;
+    }
+
     .lang-switch button {
       padding: 0.6rem 0.9rem;
       font-size: 0.8rem;
@@ -182,13 +332,19 @@
 <body>
 
 <div class="topbar">
-  <div class="lang-switch" role="group" aria-label="Izbira jezika portfolia">
+  <div class="tabs" role="tablist" aria-label="Navigacija">
+    <button id="tab-cv" onclick="setTab('cv')" data-label-si="Življenjepis" data-label-en="CV">Življenjepis</button>
+    <button id="tab-portfolio" onclick="setTab('portfolio')" data-label-si="Portfolijo" data-label-en="Portfolio">Portfolijo</button>
+    <button id="tab-contact" onclick="setTab('contact')" data-label-si="Kontakt" data-label-en="Contact">Kontakt</button>
+  </div>
+  <div class="lang-switch" role="group" aria-label="Izbira jezika">
     <button id="btn-si" onclick="setLang('si')">Slovensko</button>
     <button id="btn-en" onclick="setLang('en')">English</button>
   </div>
 </div>
 
-<section class="cover">
+<!-- PANEL: PORTFOLIJO -->
+<section class="panel active" id="panel-portfolio">
   <div class="cover-text">
     <p class="cover-name">Gašper Uršič</p>
     <h1 class="cover-title" id="cover-title">Portfolijo</h1>
@@ -197,26 +353,88 @@
   <div class="cover-photo">
     <img src="naslovnica.jpg" alt="Naslovna fotografija portfolia">
   </div>
+
+  <main>
+    <div class="sheet">
+      <div id="pdf-container">
+        <div class="status">Nalagam portfolio…</div>
+      </div>
+      <div class="fallback">
+        Se ne prikaže pravilno? <a id="download-link" href="Portfolijo.si.pdf" download>Prenesi PDF</a>
+      </div>
+    </div>
+  </main>
 </section>
 
-<main>
-  <div class="sheet">
-    <div id="pdf-container">
-      <div class="status">Nalagam portfolio…</div>
-    </div>
-    <div class="fallback">
-      Se ne prikaže pravilno? <a id="download-link" href="Portfolijo.si.pdf" download>Prenesi PDF</a>
+<!-- PANEL: ŽIVLJENJEPIS -->
+<section class="panel" id="panel-cv">
+  <div class="cv-wrap">
+    <h2 id="cv-heading">Življenjepis</h2>
+
+    <div class="cv-grid">
+      <div class="cv-left">
+        <img class="cv-photo" src="osebna-slika-1.jpg" alt="Gašper Uršič">
+        <div class="cv-about">
+          <h3 id="cv-h-about">O meni</h3>
+          <p id="cv-about-text">Prihajam iz vasice Idrsko pred mestom Kobarid v posočju. Doma imamo majhno kmetijo, ki mi je skozi otroštvo prinašala konstanten stik z naravo in neomejene možnosti ustvarjanja. Ustvarjal sem vedno z željo po optimizaciji obstoječih ter iskanju novih rešitev na različne probleme. S slednjo ustvarjalnostjo oziroma notranjo zagnanostjo sem se tako lotil različnih projektov od izdelave smuči, lesenih prstanov, recikliranih torb do vodenja gradnje nove klinike v Keniji.<br><br>Najbolj se veselim učenja, oziroma temeljitega spoznavanja česarkoli opravljam, saj lahko s slednjim najbolje pripomorem k razvoju novih rešitev in delovnega procesa.</p>
+        </div>
+      </div>
+
+      <div class="cv-right">
+        <div class="cv-contact-block">
+          <p class="cv-name-line">Gašper Uršič mag. inž. arh.</p>
+          <p>Idrsko 102, Kobarid, 5222</p>
+          <p>+386 (0)51 817 313</p>
+          <p>gasper.ursicc@gmail.com</p>
+        </div>
+
+        <div class="cv-section">
+          <h3 id="cv-h-education">Šolanje</h3>
+          <p class="cv-line">Srednješolsko izobraževanje | Gimnazija Tolmin | 2015-2019</p>
+          <p class="cv-line">Erazmus izmenjava | Faculdade de Arquitetura | ULisboa | Portugalska | 2023</p>
+          <p class="cv-line">Fakulteta za arhitekturo v Ljubljani | 2019-2026 | magister inženir arhitekture</p>
+        </div>
+
+        <div class="cv-section">
+          <h3 id="cv-h-computer">Računalniška znanja</h3>
+          <p class="cv-line">• Oblikovalski programi (PS, Ai, Id, Pr, Affinity)</p>
+          <p class="cv-line">• Načrtovalni programi (AutoCad, Archicad, Rhino, Twinmotion ter osnove drugih)</p>
+        </div>
+
+        <div class="cv-section">
+          <h3 id="cv-h-hobbies">Hobiji</h3>
+          <p class="cv-line">• Šport (tek, kolo, košarka, smučanje)</p>
+          <p class="cv-line">• Eksperimentalna delavnica Gust (izdelovanje prototipov od smuči do prstana)</p>
+          <p class="cv-line">• Urejanje in izdelovanje manjših zunanjih intervencij (poti, mize, lijaki, vrata)</p>
+          <p class="cv-line">• Rad potujem, sploh ko je možnost stika in dela z lokalno skupnostjo</p>
+        </div>
+
+        <div class="cv-section">
+          <h3 id="cv-h-experience">Delovne izkušnje</h3>
+          <p class="cv-line">• Delo v turizmu (delo v hostlu, delo v hotelu, delo v bikeparku, prevozi)</p>
+          <p class="cv-line">• Skupina Stik (arheološka izkopavanja)</p>
+          <p class="cv-line">• Studio Pirss (arhitekturni biro)</p>
+          <p class="cv-line">• Petrol (oddelek za razvoj fizičnih prodajnih mest)</p>
+          <p class="cv-line">• Rijavec arhitektura (arhitekturni biro)</p>
+          <p class="cv-line">• Načrtovanje in vodenje gradnje nove klinike v kenijski vasici Majiwa</p>
+        </div>
+      </div>
     </div>
   </div>
-</main>
+</section>
 
-<footer>
-  <p class="footer-name">Gašper Uršič mag. inž. arh.</p>
-  <p>Idrsko 102, Kobarid, 5222</p>
-  <p>+386 (0)51 817 313</p>
-  <p>gasper.ursicc@gmail.com</p>
-  <p>© 2026 Gašper Uršič</p>
-</footer>
+<!-- PANEL: KONTAKT -->
+<section class="panel" id="panel-contact">
+  <div class="contact-wrap">
+    <h2 id="contact-heading">Kontakt</h2>
+    <p><strong>Gašper Uršič mag. inž. arh.</strong></p>
+    <p>Idrsko 102, Kobarid, 5222</p>
+    <p><a href="tel:+38651817313">+386 (0)51 817 313</a></p>
+    <p><a href="mailto:gasper.ursicc@gmail.com">gasper.ursicc@gmail.com</a></p>
+  </div>
+</section>
+
+<footer>© 2026 Gašper Uršič</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -244,7 +462,16 @@
     en: "Portfolio"
   };
 
+  const cvLabels = {
+    si: { heading: "Življenjepis", about: "O meni", education: "Šolanje", computer: "Računalniška znanja", hobbies: "Hobiji", experience: "Delovne izkušnje" },
+    en: { heading: "CV", about: "About Me", education: "Education", computer: "Computer Skills", hobbies: "Hobbies", experience: "Work Experience" }
+  };
+
+  const contactHeading = { si: "Kontakt", en: "Contact" };
+
   let renderToken = 0;
+  let pdfRendered = false;
+  let currentLang = 'si';
 
   async function renderPdf(url) {
     const myToken = ++renderToken;
@@ -257,7 +484,6 @@
       if (myToken !== renderToken) return;
       container.innerHTML = '';
 
-      // Višja ločljivost, da je slika ostra tudi pri povečavi (pinch-zoom)
       const dpr = Math.max(window.devicePixelRatio || 1, 2);
 
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
@@ -277,6 +503,7 @@
         if (myToken !== renderToken) return;
         container.appendChild(canvas);
       }
+      pdfRendered = true;
     } catch (err) {
       if (myToken !== renderToken) return;
       container.innerHTML = '<div class="status">PDF-a ni bilo mogoče naložiti. Uporabi povezavo spodaj za prenos.</div>';
@@ -284,13 +511,40 @@
   }
 
   function setLang(lang) {
+    currentLang = lang;
     document.getElementById('download-link').href = files[lang];
     document.getElementById('cover-subtitle').textContent = subtitles[lang];
     document.getElementById('cover-title').textContent = titles[lang];
     document.getElementById('btn-si').classList.toggle('active', lang === 'si');
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
     document.documentElement.lang = lang;
-    renderPdf(files[lang]);
+
+    document.getElementById('tab-cv').textContent = document.getElementById('tab-cv').dataset['label' + (lang === 'si' ? 'Si' : 'En')];
+    document.getElementById('tab-portfolio').textContent = document.getElementById('tab-portfolio').dataset['label' + (lang === 'si' ? 'Si' : 'En')];
+    document.getElementById('tab-contact').textContent = document.getElementById('tab-contact').dataset['label' + (lang === 'si' ? 'Si' : 'En')];
+
+    document.getElementById('cv-heading').textContent = cvLabels[lang].heading;
+    document.getElementById('cv-h-about').textContent = cvLabels[lang].about;
+    document.getElementById('cv-h-education').textContent = cvLabels[lang].education;
+    document.getElementById('cv-h-computer').textContent = cvLabels[lang].computer;
+    document.getElementById('cv-h-hobbies').textContent = cvLabels[lang].hobbies;
+    document.getElementById('cv-h-experience').textContent = cvLabels[lang].experience;
+    document.getElementById('contact-heading').textContent = contactHeading[lang];
+
+    pdfRendered = false;
+    if (document.getElementById('panel-portfolio').classList.contains('active')) {
+      renderPdf(files[lang]);
+    }
+  }
+
+  function setTab(tab) {
+    ['portfolio', 'cv', 'contact'].forEach(t => {
+      document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+      document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    });
+    if (tab === 'portfolio' && !pdfRendered) {
+      renderPdf(files[currentLang]);
+    }
   }
 
   setLang('si');
