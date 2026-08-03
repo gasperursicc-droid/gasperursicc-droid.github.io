@@ -6,7 +6,7 @@
 <title>Gašper Uršič — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #14150f;
@@ -23,7 +23,7 @@
     padding: 0;
     background: var(--ink);
     color: var(--paper);
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
   }
 
   .cover {
@@ -36,14 +36,16 @@
   }
 
   .cover-name {
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(1rem, 2.5vw, 1.4rem);
     font-weight: 500;
     margin: 0 0 0.4rem;
   }
 
   .cover-title {
-    font-family: 'Archivo Black', sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
     font-size: clamp(2.6rem, 11vw, 6rem);
     line-height: 0.95;
     margin: 0;
@@ -51,7 +53,7 @@
   }
 
   .cover-subtitle {
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(1rem, 3vw, 1.6rem);
     font-weight: 500;
     text-align: right;
@@ -82,7 +84,7 @@
 
   .lang-switch button {
     flex: 1;
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -148,6 +150,7 @@
     padding: 2rem 1rem;
     font-size: 0.9rem;
     color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
   }
 
   .fallback {
@@ -155,6 +158,7 @@
     padding: 1rem;
     font-size: 0.85rem;
     color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
   }
 
   .fallback a {
@@ -169,6 +173,7 @@
     padding: 1.25rem;
     font-size: 0.75rem;
     color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
   }
 
   @media (max-width: 640px) {
@@ -212,12 +217,15 @@
 
 <footer>© 2026 Gašper Uršič</footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-  let workerReady = fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js")
+  let workerReady = fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js")
     .then(r => r.blob())
     .then(blob => {
       pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+    })
+    .catch(() => {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     });
 
   const files = {
@@ -235,9 +243,10 @@
   async function renderPdf(url) {
     const myToken = ++renderToken;
     const container = document.getElementById('pdf-container');
-    container.innerHTML = '<div class="status" id="status">Nalagam portfolio…</div>';
+    container.innerHTML = '<div class="status">Nalagam portfolio…</div>';
 
     try {
+      await workerReady;
       const pdf = await pdfjsLib.getDocument(url).promise;
       if (myToken !== renderToken) return;
       container.innerHTML = '';
@@ -276,7 +285,7 @@
     renderPdf(files[lang]);
   }
 
-  workerReady.then(() => setLang('si'));
+  setLang('si');
 </script>
 
 </body>
