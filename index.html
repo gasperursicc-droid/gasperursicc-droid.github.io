@@ -137,6 +137,77 @@
     display: block;
   }
 
+  /* KAZALO */
+  .kazalo-section {
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 6vw, 4rem) 0;
+  }
+
+  .kazalo-heading {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    margin: 0 0 1.75rem;
+  }
+
+  .kazalo-grid {
+    display: flex;
+    gap: clamp(1.25rem, 3.5vw, 2.5rem);
+    overflow-x: auto;
+    padding-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .kazalo-item {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .kazalo-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    color: var(--ink);
+    padding-bottom: 0.4rem;
+  }
+
+  .kazalo-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .kazalo-visual img {
+    width: 118px;
+    height: 158px;
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .kazalo-item:hover .kazalo-visual img {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.16);
+  }
+
+  .kazalo-number {
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
+
   main {
     display: flex;
     justify-content: center;
@@ -168,6 +239,7 @@
     display: block;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     border-radius: 2px;
+    scroll-margin-top: 20px;
   }
 
   .status {
@@ -457,6 +529,48 @@
     <img src="naslovnica.jpg" alt="Naslovna fotografija portfolia">
   </div>
 
+  <!-- KAZALO -->
+  <div class="kazalo-section">
+    <h2 class="kazalo-heading" id="kazalo-heading">Kazalo</h2>
+    <div class="kazalo-grid">
+      <button class="kazalo-item" onclick="goToPage(4)">
+        <span class="kazalo-label" id="kazalo-l-cv">Življenjepis</span>
+        <span class="kazalo-visual">
+          <img src="naslovnica-zivljenjepis.jpg" alt="Življenjepis">
+          <span class="kazalo-number">4</span>
+        </span>
+      </button>
+      <button class="kazalo-item" onclick="goToPage(6)">
+        <span class="kazalo-label">Majiwa</span>
+        <span class="kazalo-visual">
+          <img src="naslovnica-majiwa.jpg" alt="Majiwa">
+          <span class="kazalo-number">6</span>
+        </span>
+      </button>
+      <button class="kazalo-item" onclick="goToPage(16)">
+        <span class="kazalo-label">Fani.si</span>
+        <span class="kazalo-visual">
+          <img src="naslovnica-fanisi.jpg" alt="Fani.si">
+          <span class="kazalo-number">16</span>
+        </span>
+      </button>
+      <button class="kazalo-item" onclick="goToPage(18)">
+        <span class="kazalo-label" id="kazalo-l-projekti">Idejni projekti</span>
+        <span class="kazalo-visual">
+          <img src="naslovnica-idejniprojekti.jpg" alt="Idejni projekti">
+          <span class="kazalo-number">18</span>
+        </span>
+      </button>
+      <button class="kazalo-item" onclick="goToPage(30)">
+        <span class="kazalo-label">Gust</span>
+        <span class="kazalo-visual">
+          <img src="naslovnica-gust.jpg" alt="Gust">
+          <span class="kazalo-number">30</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
   <main>
     <div class="sheet">
       <div id="pdf-container">
@@ -579,10 +693,12 @@
   };
 
   const contactHeading = { si: "Kontakt", en: "Contact" };
+  const kazaloHeading = { si: "Kazalo", en: "Contents" };
 
   let renderToken = 0;
   let pdfRendered = false;
   let currentLang = 'si';
+  let pendingScrollPage = null;
 
   async function renderPdf(url) {
     const myToken = ++renderToken;
@@ -608,16 +724,33 @@
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
+        canvas.dataset.page = pageNum;
         const ctx = canvas.getContext('2d');
 
         await page.render({ canvasContext: ctx, viewport: viewport }).promise;
         if (myToken !== renderToken) return;
         container.appendChild(canvas);
+
+        if (pendingScrollPage === pageNum) {
+          const target = canvas;
+          pendingScrollPage = null;
+          requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        }
       }
       pdfRendered = true;
     } catch (err) {
       if (myToken !== renderToken) return;
       container.innerHTML = '<div class="status">PDF-a ni bilo mogoče naložiti. Uporabi povezavo spodaj za prenos.</div>';
+    }
+  }
+
+  function goToPage(n) {
+    setTab('portfolio');
+    if (pdfRendered) {
+      const target = document.querySelector('#pdf-container canvas[data-page="' + n + '"]');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      pendingScrollPage = n;
     }
   }
 
@@ -641,6 +774,9 @@
     document.getElementById('cv-h-hobbies').textContent = cvLabels[lang].hobbies;
     document.getElementById('cv-h-experience').textContent = cvLabels[lang].experience;
     document.getElementById('contact-heading').textContent = contactHeading[lang];
+    document.getElementById('kazalo-heading').textContent = kazaloHeading[lang];
+    document.getElementById('kazalo-l-cv').textContent = lang === 'si' ? 'Življenjepis' : 'CV';
+    document.getElementById('kazalo-l-projekti').textContent = lang === 'si' ? 'Idejni projekti' : 'Concept projects';
 
     pdfRendered = false;
     if (document.getElementById('panel-portfolio').classList.contains('active')) {
@@ -656,8 +792,10 @@
     if (tab === 'portfolio' && !pdfRendered) {
       renderPdf(files[currentLang]);
     }
-    window.scrollTo({ top: 0 });
-    resetScrollHint();
+    if (tab !== 'portfolio') {
+      window.scrollTo({ top: 0 });
+      resetScrollHint();
+    }
   }
 
   setLang('si');
