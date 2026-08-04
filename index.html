@@ -12,7 +12,7 @@
     --ink: #14150f;
     --paper: #ffffff;
     --line: #e4e2da;
-    --accent: #3d6b55;
+    --accent: #2C334E;
     --muted: #6f7268;
   }
 
@@ -221,11 +221,11 @@
   }
 
   .cv-about h3 {
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--accent);
+    letter-spacing: 0.02em;
+    color: var(--ink);
     margin: 0 0 0.7rem;
   }
 
@@ -256,11 +256,11 @@
   }
 
   .cv-section h3 {
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--accent);
+    letter-spacing: 0.02em;
+    color: var(--ink);
     margin: 0 0 0.8rem;
   }
 
@@ -326,6 +326,109 @@
       padding: 0.6rem 0.9rem;
       font-size: 0.8rem;
     }
+  }
+
+  /* MIŠKIN KAZALEC */
+  @media (hover: hover) and (pointer: fine) {
+    body { cursor: none; }
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    background: var(--ink);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+  }
+
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+
+  .cursor-ring.pulse {
+    animation: ringExpand 0.55s ease-out forwards;
+  }
+
+  @keyframes ringExpand {
+    0% {
+      width: 14px;
+      height: 14px;
+      opacity: 0.9;
+      border-width: 3px;
+    }
+    100% {
+      width: 60px;
+      height: 60px;
+      opacity: 0;
+      border-width: 1px;
+    }
+  }
+
+  .cursor-dot.clicking {
+    animation: dotBlue 0.4s ease;
+  }
+
+  @keyframes dotBlue {
+    0% { width: 14px; height: 14px; background: var(--ink); }
+    35% { width: 20px; height: 20px; background: var(--accent); }
+    100% { width: 14px; height: 14px; background: var(--ink); }
+  }
+
+  /* INDIKATOR SKROLANJA */
+  .scroll-hint {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(1.25rem, 4vh, 2.5rem);
+    transform: translateX(-50%);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .scroll-hint.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px) scale(0.85);
+  }
+
+  .scroll-hint-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scrollBob 1.8s ease-in-out infinite;
+  }
+
+  .scroll-hint-circle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @keyframes scrollBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
   }
 </style>
 </head>
@@ -436,6 +539,14 @@
 
 <footer>© 2026 Gašper Uršič</footer>
 
+<div class="scroll-hint" id="scroll-hint">
+  <div class="scroll-hint-circle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   let workerReady = fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js")
@@ -545,9 +656,53 @@
     if (tab === 'portfolio' && !pdfRendered) {
       renderPdf(files[currentLang]);
     }
+    window.scrollTo({ top: 0 });
+    resetScrollHint();
   }
 
   setLang('si');
+
+  // MIŠKIN KAZALEC
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const cursor = document.createElement('div');
+    cursor.className = 'cursor-dot';
+    document.body.appendChild(cursor);
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    document.addEventListener('click', (e) => {
+      cursor.classList.remove('clicking');
+      void cursor.offsetWidth;
+      cursor.classList.add('clicking');
+
+      const ring = document.createElement('div');
+      ring.className = 'cursor-ring';
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+      document.body.appendChild(ring);
+      void ring.offsetWidth;
+      ring.classList.add('pulse');
+      setTimeout(() => ring.remove(), 600);
+    });
+  }
+
+  // INDIKATOR SKROLANJA
+  const scrollHint = document.getElementById('scroll-hint');
+
+  function resetScrollHint() {
+    scrollHint.classList.remove('hidden');
+  }
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      scrollHint.classList.add('hidden');
+    } else {
+      scrollHint.classList.remove('hidden');
+    }
+  });
 </script>
 
 </body>
