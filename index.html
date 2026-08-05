@@ -6,9 +6,7 @@
 <title>Gašper Uršič — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/css/page-flip.css">
-<style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet"><style>
   :root {
     --ink: #14150f;
     --paper: #ffffff;
@@ -364,6 +362,11 @@
     font-weight: 900;
     font-size: 1.5rem;
     color: var(--ink);
+  }
+
+  .kazalo-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
   }
 
   @media (max-width: 640px) {
@@ -744,41 +747,41 @@
 
     <div class="carousel-viewport">
       <div class="carousel-track" id="carousel-track">
-        <button class="kazalo-item" data-page="4">
+        <div class="kazalo-item" role="button" tabindex="0" data-page="4">
           <span class="kazalo-label" id="kazalo-l-cv">Življenjepis</span>
           <span class="kazalo-visual">
             <img class="kazalo-img" src="naslovnica-zivljenjepis.jpg" alt="Življenjepis">
             <span class="kazalo-number">4</span>
           </span>
-        </button>
-        <button class="kazalo-item" data-page="6">
+        </div>
+        <div class="kazalo-item" role="button" tabindex="0" data-page="6">
           <span class="kazalo-label">Majiwa</span>
           <span class="kazalo-visual">
             <img class="kazalo-img" src="naslovnica-majiwa.jpg" alt="Majiwa">
             <span class="kazalo-number">6</span>
           </span>
-        </button>
-        <button class="kazalo-item" data-page="16">
+        </div>
+        <div class="kazalo-item" role="button" tabindex="0" data-page="16">
           <span class="kazalo-label">Fani.si</span>
           <span class="kazalo-visual">
             <img class="kazalo-img" src="naslovnica-fanisi.jpg" alt="Fani.si">
             <span class="kazalo-number">16</span>
           </span>
-        </button>
-        <button class="kazalo-item" data-page="18">
+        </div>
+        <div class="kazalo-item" role="button" tabindex="0" data-page="18">
           <span class="kazalo-label" id="kazalo-l-projekti">Idejni projekti</span>
           <span class="kazalo-visual">
             <img class="kazalo-img" src="naslovnica-idejniprojekti.jpg" alt="Idejni projekti">
             <span class="kazalo-number">18</span>
           </span>
-        </button>
-        <button class="kazalo-item" data-page="30">
+        </div>
+        <div class="kazalo-item" role="button" tabindex="0" data-page="30">
           <span class="kazalo-label">Gust</span>
           <span class="kazalo-visual">
             <img class="kazalo-img" src="naslovnica-gust.jpg" alt="Gust">
             <span class="kazalo-number">30</span>
           </span>
-        </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1271,14 +1274,23 @@
     });
   }
 
+  function activateKazaloItem(item, i) {
+    console.log('KAZALO KLIK zaznan:', i, item.dataset.page);
+    item.classList.remove('tap');
+    void item.offsetWidth;
+    item.classList.add('tap');
+    current = i;
+    layoutCarousel();
+    goToPage(parseInt(item.dataset.page, 10));
+  }
+
   items.forEach((item, i) => {
-    item.addEventListener('click', () => {
-      item.classList.remove('tap');
-      void item.offsetWidth;
-      item.classList.add('tap');
-      current = i;
-      layoutCarousel();
-      goToPage(parseInt(item.dataset.page, 10));
+    item.addEventListener('click', () => activateKazaloItem(item, i));
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activateKazaloItem(item, i);
+      }
     });
   });
 
