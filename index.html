@@ -63,6 +63,37 @@
     border-bottom-color: var(--accent);
   }
 
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .external-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.25s ease, transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .external-link-btn:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .external-link-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+  }
+
   .lang-switch {
     display: flex;
     gap: 0.3rem;
@@ -73,10 +104,10 @@
 
   .lang-switch button {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    padding: 0.55rem 1.1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 0.55rem 1rem;
     border-radius: 999px;
     border: none;
     background: transparent;
@@ -137,36 +168,51 @@
     display: block;
   }
 
-  /* KAZALO */
+  /* KAZALO - 3D COVERFLOW */
   .kazalo-section {
-    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 6vw, 4rem) 0;
+    padding: clamp(2.5rem, 6vw, 4.5rem) 0 0;
+    scroll-margin-top: 20px;
   }
 
   .kazalo-heading {
     font-weight: 900;
     text-transform: uppercase;
     font-size: clamp(1.8rem, 6vw, 3rem);
-    margin: 0 0 1.75rem;
+    margin: 0 0 2rem;
+    padding: 0 clamp(1.25rem, 6vw, 4rem);
   }
 
-  .kazalo-grid {
-    display: flex;
-    gap: clamp(1.25rem, 3.5vw, 2.5rem);
-    overflow-x: auto;
-    padding-bottom: 1.5rem;
-    -webkit-overflow-scrolling: touch;
+  .carousel-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(340px, 42vw, 500px);
+    perspective: 1700px;
+    overflow: hidden;
+    padding: 1.25rem 0 2.5rem;
+  }
+
+  .carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
   }
 
   .kazalo-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
     display: flex;
     align-items: flex-end;
-    gap: 0.6rem;
-    flex: 0 0 auto;
+    gap: 0.75rem;
     background: none;
     border: none;
     padding: 0;
     font-family: inherit;
     cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(.22,1,.36,1), opacity 0.65s ease, filter 0.65s ease;
+    will-change: transform, opacity, filter;
   }
 
   .kazalo-label {
@@ -174,55 +220,116 @@
     transform: rotate(180deg);
     font-weight: 900;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: clamp(1.2rem, 2.6vw, 1.9rem);
     letter-spacing: 0.03em;
     white-space: nowrap;
     color: var(--ink);
     padding-bottom: 0.4rem;
+    line-height: 1;
   }
 
   .kazalo-visual {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
 
-  .kazalo-visual img {
-    width: 118px;
-    height: 158px;
-    object-fit: cover;
-    border-radius: 2px;
+  .kazalo-card {
+    width: 190px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: #f7f6f2;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.16);
+  }
+
+  .kazalo-card img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
     display: block;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .kazalo-item:hover .kazalo-visual img {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 22px rgba(0,0,0,0.16);
+    border-radius: 4px;
   }
 
   .kazalo-number {
     font-weight: 900;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--ink);
   }
 
-  main {
+  .carousel-arrow {
+    position: absolute;
+    top: 45%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #ffffff;
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding: clamp(1.5rem, 4vw, 3rem) clamp(0.75rem, 3vw, 2.5rem);
+    cursor: pointer;
+    z-index: 50;
+    transition: background 0.2s ease, transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .carousel-arrow:hover {
+    background: var(--ink);
+  }
+
+  .carousel-arrow:hover svg {
+    stroke: #fff;
+  }
+
+  .carousel-arrow svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--ink);
+    transition: stroke 0.2s ease;
+  }
+
+  .carousel-arrow.left { left: clamp(0.5rem, 3vw, 2.5rem); }
+  .carousel-arrow.right { right: clamp(0.5rem, 3vw, 2.5rem); }
+
+  @media (max-width: 640px) {
+    .kazalo-card { width: 130px; height: 175px; }
+    .kazalo-label { font-size: 1rem; }
+    .carousel-viewport { height: 320px; }
+    .carousel-arrow { width: 38px; height: 38px; }
+  }
+
+  /* PDF SECTION */
+  main {
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 6vw, 4rem);
   }
 
   .sheet {
     width: 100%;
-    max-width: 900px;
     background: #f7f6f2;
     border: 1px solid var(--line);
     border-radius: 6px;
     display: flex;
     flex-direction: column;
     padding: clamp(0.5rem, 2vw, 1.25rem);
+  }
+
+  .fallback {
+    text-align: center;
+    padding: 0.5rem 1rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .fallback a {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
   }
 
   #pdf-container {
@@ -247,20 +354,6 @@
     padding: 2rem 1rem;
     font-size: 0.9rem;
     color: var(--muted);
-  }
-
-  .fallback {
-    text-align: center;
-    padding: 1rem;
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-
-  .fallback a {
-    color: var(--ink);
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid var(--accent);
   }
 
   /* ŽIVLJENJEPIS PANEL */
@@ -374,6 +467,33 @@
     border-bottom: 1px solid var(--accent);
   }
 
+  .contact-external {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .contact-external:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .contact-external svg {
+    width: 15px;
+    height: 15px;
+    stroke: #fff;
+  }
+
   footer {
     border-top: 1px solid var(--line);
     padding: 1.25rem;
@@ -393,11 +513,6 @@
       justify-content: center;
       gap: 1rem;
     }
-
-    .lang-switch button {
-      padding: 0.6rem 0.9rem;
-      font-size: 0.8rem;
-    }
   }
 
   /* MIŠKIN KAZALEC */
@@ -409,23 +524,20 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     background: var(--ink);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+    transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
   }
 
-  .cursor-ring {
+  .cursor-ring-outer, .cursor-ring-inner {
     position: fixed;
     top: 0;
     left: 0;
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--accent);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
@@ -433,74 +545,93 @@
     opacity: 0;
   }
 
-  .cursor-ring.pulse {
-    animation: ringExpand 0.55s ease-out forwards;
+  .cursor-ring-outer {
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--accent);
   }
 
-  @keyframes ringExpand {
-    0% {
-      width: 14px;
-      height: 14px;
-      opacity: 0.9;
-      border-width: 3px;
-    }
-    100% {
-      width: 60px;
-      height: 60px;
-      opacity: 0;
-      border-width: 1px;
-    }
+  .cursor-ring-outer.pulse {
+    animation: ringOuter 0.7s cubic-bezier(.16,1,.3,1) forwards;
+  }
+
+  .cursor-ring-inner {
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+
+  .cursor-ring-inner.pulse {
+    animation: ringInner 0.5s cubic-bezier(.16,1,.3,1) forwards;
+  }
+
+  @keyframes ringOuter {
+    0% { width: 12px; height: 12px; opacity: 0.5; }
+    100% { width: 46px; height: 46px; opacity: 0; }
+  }
+
+  @keyframes ringInner {
+    0% { width: 12px; height: 12px; opacity: 0.35; }
+    100% { width: 4px; height: 4px; opacity: 0; }
   }
 
   .cursor-dot.clicking {
-    animation: dotBlue 0.4s ease;
+    animation: dotPulse 0.4s cubic-bezier(.34,1.56,.64,1);
   }
 
-  @keyframes dotBlue {
-    0% { width: 14px; height: 14px; background: var(--ink); }
-    35% { width: 20px; height: 20px; background: var(--accent); }
-    100% { width: 14px; height: 14px; background: var(--ink); }
+  @keyframes dotPulse {
+    0% { width: 12px; height: 12px; background: var(--ink); }
+    40% { width: 7px; height: 7px; background: var(--accent); }
+    100% { width: 12px; height: 12px; background: var(--ink); }
   }
 
-  /* INDIKATOR SKROLANJA */
+  /* SCROLL INDIKATOR */
   .scroll-hint {
     position: fixed;
     left: 50%;
     bottom: clamp(1.25rem, 4vh, 2.5rem);
     transform: translateX(-50%);
     z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.35rem;
-    pointer-events: none;
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
 
   .scroll-hint.hidden {
     opacity: 0;
     transform: translateX(-50%) translateY(14px) scale(0.85);
+    pointer-events: none;
   }
 
   .scroll-hint-circle {
-    width: 38px;
-    height: 38px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    border: 1.5px solid var(--ink);
+    background: var(--ink);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: scrollBob 1.8s ease-in-out infinite;
+    cursor: pointer;
+    box-shadow: 0 0 0 6px rgba(44,51,78,0.10), 0 10px 24px rgba(0,0,0,0.22);
+    animation: scrollBob 1.9s ease-in-out infinite;
+    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .scroll-hint-circle:hover {
+    background: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 9px rgba(44,51,78,0.14), 0 12px 28px rgba(0,0,0,0.26);
   }
 
   .scroll-hint-circle svg {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
+    stroke: #ffffff;
   }
 
   @keyframes scrollBob {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
+    50% { transform: translateY(7px); }
   }
 </style>
 </head>
@@ -512,9 +643,18 @@
     <button id="tab-portfolio" onclick="setTab('portfolio')" data-label-si="Portfolijo" data-label-en="Portfolio">Portfolijo</button>
     <button id="tab-contact" onclick="setTab('contact')" data-label-si="Kontakt" data-label-en="Contact">Kontakt</button>
   </div>
-  <div class="lang-switch" role="group" aria-label="Izbira jezika">
-    <button id="btn-si" onclick="setLang('si')">Slovensko</button>
-    <button id="btn-en" onclick="setLang('en')">English</button>
+  <div class="topbar-right">
+    <a class="external-link-btn" id="external-link-top" href="#" target="_blank" rel="noopener" aria-label="Zunanja povezava">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
+    <div class="lang-switch" role="group" aria-label="Izbira jezika">
+      <button id="btn-si" onclick="setLang('si')">SI</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
   </div>
 </div>
 
@@ -530,54 +670,63 @@
   </div>
 
   <!-- KAZALO -->
-  <div class="kazalo-section">
+  <div class="kazalo-section" id="kazalo-section">
     <h2 class="kazalo-heading" id="kazalo-heading">Kazalo</h2>
-    <div class="kazalo-grid">
-      <button class="kazalo-item" onclick="goToPage(4)">
-        <span class="kazalo-label" id="kazalo-l-cv">Življenjepis</span>
-        <span class="kazalo-visual">
-          <img src="naslovnica-zivljenjepis.jpg" alt="Življenjepis">
-          <span class="kazalo-number">4</span>
-        </span>
+
+    <div class="carousel-viewport">
+      <button class="carousel-arrow left" onclick="carouselPrev()" aria-label="Prejšnje">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
-      <button class="kazalo-item" onclick="goToPage(6)">
-        <span class="kazalo-label">Majiwa</span>
-        <span class="kazalo-visual">
-          <img src="naslovnica-majiwa.jpg" alt="Majiwa">
-          <span class="kazalo-number">6</span>
-        </span>
-      </button>
-      <button class="kazalo-item" onclick="goToPage(16)">
-        <span class="kazalo-label">Fani.si</span>
-        <span class="kazalo-visual">
-          <img src="naslovnica-fanisi.jpg" alt="Fani.si">
-          <span class="kazalo-number">16</span>
-        </span>
-      </button>
-      <button class="kazalo-item" onclick="goToPage(18)">
-        <span class="kazalo-label" id="kazalo-l-projekti">Idejni projekti</span>
-        <span class="kazalo-visual">
-          <img src="naslovnica-idejniprojekti.jpg" alt="Idejni projekti">
-          <span class="kazalo-number">18</span>
-        </span>
-      </button>
-      <button class="kazalo-item" onclick="goToPage(30)">
-        <span class="kazalo-label">Gust</span>
-        <span class="kazalo-visual">
-          <img src="naslovnica-gust.jpg" alt="Gust">
-          <span class="kazalo-number">30</span>
-        </span>
+      <div class="carousel-track" id="carousel-track">
+        <button class="kazalo-item" data-page="4">
+          <span class="kazalo-label" id="kazalo-l-cv">Življenjepis</span>
+          <span class="kazalo-visual">
+            <span class="kazalo-card"><img src="naslovnica-zivljenjepis.jpg" alt="Življenjepis"></span>
+            <span class="kazalo-number">4</span>
+          </span>
+        </button>
+        <button class="kazalo-item" data-page="6">
+          <span class="kazalo-label">Majiwa</span>
+          <span class="kazalo-visual">
+            <span class="kazalo-card"><img src="naslovnica-majiwa.jpg" alt="Majiwa"></span>
+            <span class="kazalo-number">6</span>
+          </span>
+        </button>
+        <button class="kazalo-item" data-page="16">
+          <span class="kazalo-label">Fani.si</span>
+          <span class="kazalo-visual">
+            <span class="kazalo-card"><img src="naslovnica-fanisi.jpg" alt="Fani.si"></span>
+            <span class="kazalo-number">16</span>
+          </span>
+        </button>
+        <button class="kazalo-item" data-page="18">
+          <span class="kazalo-label" id="kazalo-l-projekti">Idejni projekti</span>
+          <span class="kazalo-visual">
+            <span class="kazalo-card"><img src="naslovnica-idejniprojekti.jpg" alt="Idejni projekti"></span>
+            <span class="kazalo-number">18</span>
+          </span>
+        </button>
+        <button class="kazalo-item" data-page="30">
+          <span class="kazalo-label">Gust</span>
+          <span class="kazalo-visual">
+            <span class="kazalo-card"><img src="naslovnica-gust.jpg" alt="Gust"></span>
+            <span class="kazalo-number">30</span>
+          </span>
+        </button>
+      </div>
+      <button class="carousel-arrow right" onclick="carouselNext()" aria-label="Naslednje">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
   </div>
 
   <main>
     <div class="sheet">
+      <div class="fallback">
+        <span id="fallback-text">Se PDF ne prikaže pravilno?</span> <a id="download-link" href="Portfolijo.si.pdf" download><span id="fallback-link-text">Prenesi PDF</span></a>
+      </div>
       <div id="pdf-container">
         <div class="status">Nalagam portfolio…</div>
-      </div>
-      <div class="fallback">
-        Se ne prikaže pravilno? <a id="download-link" href="Portfolijo.si.pdf" download>Prenesi PDF</a>
       </div>
     </div>
   </main>
@@ -648,17 +797,25 @@
     <p>Idrsko 102, Kobarid, 5222</p>
     <p><a href="tel:+38651817313">+386 (0)51 817 313</a></p>
     <p><a href="mailto:gasper.ursicc@gmail.com">gasper.ursicc@gmail.com</a></p>
+    <a class="contact-external" id="external-link-contact" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+      <span id="external-link-contact-text">Povezava</span>
+    </a>
   </div>
 </section>
 
 <footer>© 2026 Gašper Uršič</footer>
 
 <div class="scroll-hint" id="scroll-hint">
-  <div class="scroll-hint-circle">
+  <button class="scroll-hint-circle" onclick="scrollToKazalo()" aria-label="Pomik do kazala">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
-  </div>
+  </button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -694,6 +851,11 @@
 
   const contactHeading = { si: "Kontakt", en: "Contact" };
   const kazaloHeading = { si: "Kazalo", en: "Contents" };
+  const fallbackLabels = {
+    si: { text: "Se PDF ne prikaže pravilno?", link: "Prenesi PDF" },
+    en: { text: "PDF not displaying correctly?", link: "Download PDF" }
+  };
+  const externalLinkText = { si: "Povezava", en: "Link" };
 
   let renderToken = 0;
   let pdfRendered = false;
@@ -717,7 +879,7 @@
         if (myToken !== renderToken) return;
         const page = await pdf.getPage(pageNum);
         const baseViewport = page.getViewport({ scale: 1 });
-        const targetWidth = 900;
+        const targetWidth = 1400;
         const scale = (targetWidth / baseViewport.width) * dpr;
         const viewport = page.getViewport({ scale });
 
@@ -740,7 +902,7 @@
       pdfRendered = true;
     } catch (err) {
       if (myToken !== renderToken) return;
-      container.innerHTML = '<div class="status">PDF-a ni bilo mogoče naložiti. Uporabi povezavo spodaj za prenos.</div>';
+      container.innerHTML = '<div class="status">PDF-a ni bilo mogoče naložiti. Uporabi povezavo zgoraj za prenos.</div>';
     }
   }
 
@@ -752,6 +914,15 @@
     } else {
       pendingScrollPage = n;
     }
+  }
+
+  function scrollToKazalo() {
+    if (!document.getElementById('panel-portfolio').classList.contains('active')) {
+      setTab('portfolio');
+    }
+    requestAnimationFrame(() => {
+      document.getElementById('kazalo-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   function setLang(lang) {
@@ -777,6 +948,9 @@
     document.getElementById('kazalo-heading').textContent = kazaloHeading[lang];
     document.getElementById('kazalo-l-cv').textContent = lang === 'si' ? 'Življenjepis' : 'CV';
     document.getElementById('kazalo-l-projekti').textContent = lang === 'si' ? 'Idejni projekti' : 'Concept projects';
+    document.getElementById('fallback-text').textContent = fallbackLabels[lang].text;
+    document.getElementById('fallback-link-text').textContent = fallbackLabels[lang].link;
+    document.getElementById('external-link-contact-text').textContent = externalLinkText[lang];
 
     pdfRendered = false;
     if (document.getElementById('panel-portfolio').classList.contains('active')) {
@@ -816,18 +990,27 @@
       void cursor.offsetWidth;
       cursor.classList.add('clicking');
 
-      const ring = document.createElement('div');
-      ring.className = 'cursor-ring';
-      ring.style.left = e.clientX + 'px';
-      ring.style.top = e.clientY + 'px';
-      document.body.appendChild(ring);
-      void ring.offsetWidth;
-      ring.classList.add('pulse');
-      setTimeout(() => ring.remove(), 600);
+      const outer = document.createElement('div');
+      outer.className = 'cursor-ring-outer';
+      outer.style.left = e.clientX + 'px';
+      outer.style.top = e.clientY + 'px';
+      document.body.appendChild(outer);
+
+      const inner = document.createElement('div');
+      inner.className = 'cursor-ring-inner';
+      inner.style.left = e.clientX + 'px';
+      inner.style.top = e.clientY + 'px';
+      document.body.appendChild(inner);
+
+      void outer.offsetWidth;
+      outer.classList.add('pulse');
+      inner.classList.add('pulse');
+
+      setTimeout(() => { outer.remove(); inner.remove(); }, 700);
     });
   }
 
-  // INDIKATOR SKROLANJA
+  // SCROLL INDIKATOR
   const scrollHint = document.getElementById('scroll-hint');
 
   function resetScrollHint() {
@@ -841,6 +1024,82 @@
       scrollHint.classList.remove('hidden');
     }
   });
+
+  // 3D COVERFLOW KAROSEL
+  const track = document.getElementById('carousel-track');
+  const items = Array.from(document.querySelectorAll('.kazalo-item'));
+  let current = 0;
+
+  function layoutCarousel() {
+    const vw = track.getBoundingClientRect().width;
+    const step = Math.min(Math.max(vw * 0.16, 140), 230);
+    const angle = 34;
+    const depth = 260;
+
+    items.forEach((item, i) => {
+      let offset = i - current;
+      const total = items.length;
+      if (offset > total / 2) offset -= total;
+      if (offset < -total / 2) offset += total;
+
+      const abs = Math.abs(offset);
+      const scale = abs === 0 ? 1.3 : Math.max(0.62, 0.92 - abs * 0.14);
+      const opacity = abs === 0 ? 1 : Math.max(0.28, 0.85 - abs * 0.28);
+      const blur = abs === 0 ? 0 : Math.min(abs * 1.6, 4);
+      const z = -abs * depth;
+      const rotY = offset === 0 ? 0 : (offset > 0 ? -angle : angle);
+      const x = offset * step;
+      const zIndex = 100 - abs;
+
+      item.style.transform = `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${rotY}deg) scale(${scale})`;
+      item.style.opacity = opacity.toFixed(3);
+      item.style.filter = blur > 0 ? `blur(${blur.toFixed(1)}px)` : 'none';
+      item.style.zIndex = zIndex;
+    });
+  }
+
+  function carouselPrev() {
+    current = (current - 1 + items.length) % items.length;
+    layoutCarousel();
+  }
+
+  function carouselNext() {
+    current = (current + 1) % items.length;
+    layoutCarousel();
+  }
+
+  items.forEach((item, i) => {
+    item.addEventListener('click', () => {
+      if (i === current) {
+        goToPage(parseInt(item.dataset.page, 10));
+      } else {
+        current = i;
+        layoutCarousel();
+      }
+    });
+  });
+
+  let dragStartX = null;
+  let dragged = false;
+
+  track.addEventListener('pointerdown', (e) => {
+    dragStartX = e.clientX;
+    dragged = false;
+  });
+
+  window.addEventListener('pointerup', (e) => {
+    if (dragStartX === null) return;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 40) {
+      dragged = true;
+      if (dx < 0) carouselNext(); else carouselPrev();
+    }
+    dragStartX = null;
+  });
+
+  window.addEventListener('resize', layoutCarousel);
+  window.addEventListener('load', layoutCarousel);
+  requestAnimationFrame(layoutCarousel);
 </script>
 
 </body>
