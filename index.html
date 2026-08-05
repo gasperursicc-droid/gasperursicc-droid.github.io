@@ -36,7 +36,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.55s ease, visibility 0.55s ease;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
   }
 
   #intro-overlay.hide {
@@ -54,7 +54,19 @@
     color: var(--ink);
     opacity: 0;
     transform: translateY(14px);
-    transition: opacity 0.55s cubic-bezier(.22,1,.36,1), transform 0.55s cubic-bezier(.22,1,.36,1);
+    transition: opacity 0.45s cubic-bezier(.22,1,.36,1), transform 0.45s cubic-bezier(.22,1,.36,1);
+  }
+
+  #intro-name {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+  }
+
+  #intro-title,
+  #intro-cv {
+    font-size: clamp(3rem, 13vw, 7.5rem);
   }
 
   .intro-text.show {
@@ -84,6 +96,10 @@
   body.loaded .reveal[data-d="4"] { transition-delay: 0.4s; }
 
   .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    background: var(--paper);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -91,6 +107,17 @@
     gap: 0.75rem;
     padding: 1rem clamp(1.25rem, 6vw, 4rem);
     border-bottom: 1px solid var(--line);
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .topbar.scrolled {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .topbar.scrolled:hover {
+    background: var(--paper);
+    border-bottom-color: var(--line);
   }
 
   .tabs {
@@ -187,6 +214,37 @@
     outline-offset: 2px;
   }
 
+  @keyframes tapPulse {
+    0% { transform: scale(1); }
+    35% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  .tabs button.tap,
+  .lang-switch button.tap {
+    animation: tapPulse 0.3s ease;
+  }
+
+  @keyframes kazaloVisualTap {
+    0% { transform: scale(1); }
+    35% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes kazaloLabelTap {
+    0% { transform: rotate(180deg) scale(1); }
+    35% { transform: rotate(180deg) scale(0.9); }
+    100% { transform: rotate(180deg) scale(1); }
+  }
+
+  .kazalo-item.tap .kazalo-visual {
+    animation: kazaloVisualTap 0.35s ease;
+  }
+
+  .kazalo-item.tap .kazalo-label {
+    animation: kazaloLabelTap 0.35s ease;
+  }
+
   .panel { display: none; }
   .panel.active { display: block; }
 
@@ -234,7 +292,7 @@
   .kazalo-heading {
     font-weight: 900;
     text-transform: uppercase;
-    font-size: clamp(1.8rem, 6vw, 3rem);
+    font-size: clamp(2.1rem, 7vw, 3.6rem);
     margin: 0 0 2rem;
     padding: 0 clamp(1.25rem, 6vw, 4rem);
   }
@@ -531,8 +589,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 12px;
-    height: 12px;
+    width: 18px;
+    height: 18px;
     background: var(--ink);
     border-radius: 50%;
     pointer-events: none;
@@ -541,55 +599,56 @@
     transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
   }
 
-  .cursor-ring-outer, .cursor-ring-inner {
+  .cursor-dot.clicking {
+    animation: dotMorph 0.55s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes dotMorph {
+    0% { width: 18px; height: 18px; background: var(--ink); border-radius: 50%; transform: translate(-50%,-50%) rotate(0deg); }
+    30% { width: 10px; height: 10px; background: var(--accent); border-radius: 30%; transform: translate(-50%,-50%) rotate(45deg); }
+    60% { width: 26px; height: 26px; background: var(--accent); border-radius: 50%; transform: translate(-50%,-50%) rotate(180deg); }
+    100% { width: 18px; height: 18px; background: var(--ink); border-radius: 50%; transform: translate(-50%,-50%) rotate(360deg); }
+  }
+
+  .click-particle {
     position: fixed;
     top: 0;
     left: 0;
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
     transform: translate(-50%, -50%);
+  }
+
+  .click-particle.fly {
+    transition: transform 0.6s cubic-bezier(.16,1,.3,1), opacity 0.6s ease;
     opacity: 0;
   }
 
-  .cursor-ring-outer {
-    width: 12px;
-    height: 12px;
-    border: 1px solid var(--accent);
+  .click-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9997;
+    transform: translate(-50%, -50%);
+    opacity: 0;
   }
 
-  .cursor-ring-outer.pulse {
-    animation: ringOuter 0.7s cubic-bezier(.16,1,.3,1) forwards;
+  .click-ring.pulse {
+    animation: ringGrow 0.6s cubic-bezier(.16,1,.3,1) forwards;
   }
 
-  .cursor-ring-inner {
-    width: 12px;
-    height: 12px;
-    background: var(--accent);
-  }
-
-  .cursor-ring-inner.pulse {
-    animation: ringInner 0.5s cubic-bezier(.16,1,.3,1) forwards;
-  }
-
-  @keyframes ringOuter {
-    0% { width: 12px; height: 12px; opacity: 0.5; }
-    100% { width: 46px; height: 46px; opacity: 0; }
-  }
-
-  @keyframes ringInner {
-    0% { width: 12px; height: 12px; opacity: 0.35; }
-    100% { width: 4px; height: 4px; opacity: 0; }
-  }
-
-  .cursor-dot.clicking {
-    animation: dotPulse 0.4s cubic-bezier(.34,1.56,.64,1);
-  }
-
-  @keyframes dotPulse {
-    0% { width: 12px; height: 12px; background: var(--ink); }
-    40% { width: 7px; height: 7px; background: var(--accent); }
-    100% { width: 12px; height: 12px; background: var(--ink); }
+  @keyframes ringGrow {
+    0% { width: 18px; height: 18px; opacity: 0.6; }
+    100% { width: 70px; height: 70px; opacity: 0; }
   }
 
   /* SCROLL INDIKATOR */
@@ -631,8 +690,8 @@
   }
 
   .scroll-hint-circle svg {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     stroke: #ffffff;
   }
 
@@ -647,6 +706,7 @@
 <div id="intro-overlay">
   <div class="intro-text" id="intro-name">Gašper Uršič</div>
   <div class="intro-text" id="intro-title">Portfolio</div>
+  <div class="intro-text" id="intro-cv">CV</div>
 </div>
 
 <div class="topbar reveal" data-d="1">
@@ -814,7 +874,7 @@
 
 <div class="scroll-hint" id="scroll-hint">
   <button class="scroll-hint-circle" onclick="scrollToKazalo()" aria-label="Pomik do kazala">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </button>
@@ -1025,6 +1085,12 @@
   }
 
   function setLang(lang) {
+    const langBtn = document.getElementById('btn-' + lang);
+    if (langBtn) {
+      langBtn.classList.remove('tap');
+      void langBtn.offsetWidth;
+      langBtn.classList.add('tap');
+    }
     currentLang = lang;
     document.getElementById('download-link').href = files[lang];
     document.getElementById('cover-subtitle').textContent = subtitles[lang];
@@ -1062,6 +1128,12 @@
   }
 
   function setTab(tab) {
+    const tabBtn = document.getElementById('tab-' + tab);
+    if (tabBtn) {
+      tabBtn.classList.remove('tap');
+      void tabBtn.offsetWidth;
+      tabBtn.classList.add('tap');
+    }
     ['portfolio', 'cv', 'contact'].forEach(t => {
       document.getElementById('panel-' + t).classList.toggle('active', t === tab);
       document.getElementById('tab-' + t).classList.toggle('active', t === tab);
@@ -1071,6 +1143,9 @@
     }
     if (tab !== 'portfolio') {
       window.scrollTo({ top: 0 });
+      scrollHint.classList.add('hidden');
+      topbar.classList.remove('scrolled');
+    } else {
       resetScrollHint();
     }
   }
@@ -1082,16 +1157,19 @@
     const overlay = document.getElementById('intro-overlay');
     const nameEl = document.getElementById('intro-name');
     const titleEl = document.getElementById('intro-title');
+    const cvEl = document.getElementById('intro-cv');
 
     setTimeout(() => nameEl.classList.add('show'), 80);
-    setTimeout(() => nameEl.classList.add('leave'), 620);
-    setTimeout(() => { titleEl.classList.add('show'); }, 680);
-    setTimeout(() => titleEl.classList.add('leave'), 1180);
+    setTimeout(() => nameEl.classList.add('leave'), 630);
+    setTimeout(() => titleEl.classList.add('show'), 690);
+    setTimeout(() => titleEl.classList.add('leave'), 1250);
+    setTimeout(() => cvEl.classList.add('show'), 1310);
+    setTimeout(() => cvEl.classList.add('leave'), 1810);
     setTimeout(() => {
       overlay.classList.add('hide');
       document.body.classList.add('loaded');
-    }, 1350);
-    setTimeout(() => { overlay.style.display = 'none'; }, 1950);
+    }, 1970);
+    setTimeout(() => { overlay.style.display = 'none'; }, 2420);
   })();
 
   // MIŠKIN KAZALEC
@@ -1110,43 +1188,58 @@
       void cursor.offsetWidth;
       cursor.classList.add('clicking');
 
-      const outer = document.createElement('div');
-      outer.className = 'cursor-ring-outer';
-      outer.style.left = e.clientX + 'px';
-      outer.style.top = e.clientY + 'px';
-      document.body.appendChild(outer);
+      const ring = document.createElement('div');
+      ring.className = 'click-ring';
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+      document.body.appendChild(ring);
+      void ring.offsetWidth;
+      ring.classList.add('pulse');
+      setTimeout(() => ring.remove(), 650);
 
-      const inner = document.createElement('div');
-      inner.className = 'cursor-ring-inner';
-      inner.style.left = e.clientX + 'px';
-      inner.style.top = e.clientY + 'px';
-      document.body.appendChild(inner);
+      const count = 6;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'click-particle';
+        p.style.left = e.clientX + 'px';
+        p.style.top = e.clientY + 'px';
+        document.body.appendChild(p);
 
-      void outer.offsetWidth;
-      outer.classList.add('pulse');
-      inner.classList.add('pulse');
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+        const dist = 34 + Math.random() * 22;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
 
-      setTimeout(() => { outer.remove(); inner.remove(); }, 700);
+        requestAnimationFrame(() => {
+          p.classList.add('fly');
+          p.style.transform = `translate(-50%, -50%) translate(${tx}px, ${ty}px) scale(0.3)`;
+        });
+
+        setTimeout(() => p.remove(), 650);
+      }
     });
   }
 
   // SCROLL INDIKATOR
   const scrollHint = document.getElementById('scroll-hint');
+  const topbar = document.querySelector('.topbar');
 
   function resetScrollHint() {
     scrollHint.classList.remove('hidden');
   }
 
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 60) {
-      scrollHint.classList.add('hidden');
-    } else {
-      scrollHint.classList.remove('hidden');
+    if (document.getElementById('panel-portfolio').classList.contains('active')) {
+      if (window.scrollY > 60) {
+        scrollHint.classList.add('hidden');
+      } else {
+        scrollHint.classList.remove('hidden');
+      }
+      topbar.classList.toggle('scrolled', window.scrollY > 10);
     }
   });
 
   // 3D COVERFLOW KAROSEL
-  const carouselViewport = document.querySelector('.carousel-viewport');
   const track = document.getElementById('carousel-track');
   const items = Array.from(document.querySelectorAll('.kazalo-item'));
   let current = 0;
@@ -1174,17 +1267,18 @@
       item.style.transform = `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${rotY}deg) scale(${scale})`;
       item.style.opacity = opacity.toFixed(3);
       item.style.zIndex = zIndex;
+      item.classList.toggle('active-center', abs === 0);
     });
   }
 
   items.forEach((item, i) => {
     item.addEventListener('click', () => {
-      if (i === current) {
-        goToPage(parseInt(item.dataset.page, 10));
-      } else {
-        current = i;
-        layoutCarousel();
-      }
+      item.classList.remove('tap');
+      void item.offsetWidth;
+      item.classList.add('tap');
+      current = i;
+      layoutCarousel();
+      goToPage(parseInt(item.dataset.page, 10));
     });
   });
 
@@ -1209,7 +1303,10 @@
   });
 
   let wheelLocked = false;
-  carouselViewport.addEventListener('wheel', (e) => {
+  track.addEventListener('wheel', (e) => {
+    const overActive = e.target.closest('.kazalo-item.active-center');
+    if (!overActive) return; // izven osrednje slike: normalen scroll strani
+
     e.preventDefault();
     if (wheelLocked) return;
     const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
