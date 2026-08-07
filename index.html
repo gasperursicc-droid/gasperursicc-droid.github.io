@@ -12,6 +12,8 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2314150f'/%3E%3Ctext x='50' y='69' font-family='Arial, sans-serif' font-size='58' font-weight='900' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>
   :root {
     --ink: #14150f;
@@ -298,29 +300,6 @@
     white-space: nowrap;
   }
 
-  .title-letter {
-    display: inline-block;
-    overflow: visible;
-    max-width: 1.3em;
-    opacity: 1;
-    transform: translateY(0) rotate(0deg);
-    transition: max-width 0.45s ease, transform 0.5s cubic-bezier(.34,1.56,.64,1), opacity 0.3s ease;
-  }
-
-  .title-letter.letter-out {
-    max-width: 0;
-    opacity: 0;
-    transform: translateY(2em) rotate(28deg);
-    position: relative;
-    z-index: 2;
-    transition: max-width 0.5s ease 0.15s, transform 0.7s cubic-bezier(.55,.06,.68,.19), opacity 0.3s ease 0.5s;
-  }
-
-  .title-letter.letter-in-start {
-    max-width: 0;
-    opacity: 0;
-    transform: translateY(-2em) rotate(-28deg);
-  }
 
   .cover-subtitle {
     font-size: clamp(1rem, 3vw, 1.6rem);
@@ -463,13 +442,54 @@
 
   .flipbook-wrap {
     width: 100%;
+    max-height: 80vh;
     display: flex;
     justify-content: center;
+    overflow: auto;
+    touch-action: pan-x pan-y;
   }
 
   #flipbook {
     box-shadow: 0 30px 60px -20px rgba(0,0,0,0.35);
     border-radius: 3px;
+    transform-origin: top center;
+    transition: transform 0.2s ease;
+  }
+
+  .zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .zoom-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.75rem;
+    border-radius: 999px;
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .zoom-btn:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .zoom-btn-wide {
+    min-width: 56px;
+    font-size: 0.8rem;
+    font-weight: 600;
   }
 
   .status {
@@ -481,7 +501,7 @@
 
   /* ŽIVLJENJEPIS PANEL */
   .cv-wrap {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 6vw, 2rem);
   }
@@ -495,7 +515,7 @@
 
   .cv-grid {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 400px 1fr;
     gap: clamp(1.5rem, 4vw, 3rem);
     align-items: start;
   }
@@ -560,7 +580,7 @@
   }
 
   .cv-line-bullet {
-    padding-left: 1.1em;
+    padding-left: calc(1.25rem + 1.1em);
     text-indent: -1.1em;
   }
 
@@ -1082,9 +1102,14 @@
       <div class="fallback">
         <span id="fallback-text">Se PDF ne prikaže pravilno?</span> <a id="download-link" href="Portfolijo.si.pdf" download><span id="fallback-link-text">Prenesi PDF</span></a>
       </div>
-      <div class="flipbook-wrap">
+      <div class="flipbook-wrap" id="flipbook-wrap">
         <div class="status" id="pdf-status">Nalagam portfolio…</div>
         <div id="flipbook" style="display:none;"></div>
+      </div>
+      <div class="zoom-controls">
+        <button type="button" class="zoom-btn" id="zoom-out" aria-label="Pomanjšaj">−</button>
+        <button type="button" class="zoom-btn zoom-btn-wide" id="zoom-reset" aria-label="Ponastavi povečavo">100%</button>
+        <button type="button" class="zoom-btn" id="zoom-in" aria-label="Povečaj">+</button>
       </div>
     </div>
   </main>
@@ -1097,7 +1122,7 @@
 
     <div class="cv-grid">
       <div class="cv-left">
-        <img class="cv-photo" src="osebna-slika-2.png" alt="Gašper Uršič" loading="lazy">
+        <img class="cv-photo" src="osebna-slika-2.jpg" alt="Gašper Uršič" loading="lazy">
         <div class="cv-about">
           <h3 id="cv-h-about">O meni</h3>
           <p id="cv-about-text"></p>
@@ -1261,9 +1286,9 @@
     si: {
       about: "Prihajam iz vasice Idrsko pred mestom Kobarid v posočju. Doma imamo majhno kmetijo, ki mi je skozi otroštvo prinašala konstanten stik z naravo in neomejene možnosti ustvarjanja. Ustvarjal sem vedno z željo po optimizaciji obstoječih ter iskanju novih rešitev na različne probleme. S slednjo ustvarjalnostjo oziroma notranjo zagnanostjo sem se tako lotil različnih projektov od izdelave smuči, lesenih prstanov, recikliranih torb do vodenja gradnje nove klinike v Keniji.<br><br>Najbolj se veselim učenja, oziroma temeljitega spoznavanja česarkoli opravljam, saj lahko s slednjim najbolje pripomorem k razvoju novih rešitev in delovnega procesa.",
       edu: [
-        "Srednješolsko izobraževanje | Gimnazija Tolmin | 2015-2019",
-        "Erazmus izmenjava | Faculdade de Arquitetura | ULisboa | Portugalska | 2023",
-        "Fakulteta za arhitekturo v Ljubljani | 2019-2026 | magister inženir arhitekture"
+        "• Srednješolsko izobraževanje | Gimnazija Tolmin | 2015-2019",
+        "• Erazmus izmenjava | Faculdade de Arquitetura | ULisboa | Portugalska | 2023",
+        "• Fakulteta za arhitekturo v Ljubljani | 2019-2026 | magister inženir arhitekture"
       ],
       comp: [
         "• Oblikovalski programi (PS, Ai, Id, Pr, Affinity)",
@@ -1288,9 +1313,9 @@
     en: {
       about: "I come from the small village of Idrsko near the town of Kobarid, in the Soča valley. We have a small family farm, which throughout my childhood gave me constant contact with nature and endless opportunities to create. I've always built things driven by a desire to improve on what already exists and to find new solutions to different problems. This creativity and inner drive has led me to take on projects ranging from making skis and wooden rings to recycled bags and managing the construction of a new clinic in Kenya.<br><br>What I enjoy most is learning — getting a thorough understanding of whatever I'm working on, since that's what best helps me develop new solutions and improve the way I work.",
       edu: [
-        "Secondary education | Tolmin Gymnasium | 2015-2019",
-        "Erasmus exchange | Faculdade de Arquitetura | ULisboa | Portugal | 2023",
-        "Faculty of Architecture, University of Ljubljana | 2019-2026 | Master's degree in Architecture"
+        "• Secondary education | Tolmin Gymnasium | 2015-2019",
+        "• Erasmus exchange | Faculdade de Arquitetura | ULisboa | Portugal | 2023",
+        "• Faculty of Architecture, University of Ljubljana | 2019-2026 | Master's degree in Architecture"
       ],
       comp: [
         "• Design software (PS, Ai, Id, Pr, Affinity)",
@@ -1351,6 +1376,7 @@
 
     const statusEl = document.getElementById('pdf-status');
     const flipEl = document.getElementById('flipbook');
+    setZoom(1);
     statusEl.style.display = 'block';
     statusEl.textContent = 'Nalagam portfolio…';
     flipEl.style.display = 'none';
@@ -1427,6 +1453,37 @@
       pdfBuilding = false;
     }
   }
+
+  // ZOOM PDF-JA
+  const flipbookWrap = document.getElementById('flipbook-wrap');
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
+  const zoomResetBtn = document.getElementById('zoom-reset');
+  const ZOOM_MIN = 1;
+  const ZOOM_MAX = 2.5;
+  let zoomLevel = 1;
+
+  function setZoom(z) {
+    zoomLevel = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+    const flipEl = document.getElementById('flipbook');
+    flipEl.style.transform = `scale(${zoomLevel})`;
+    flipbookWrap.style.cursor = zoomLevel > 1 ? 'grab' : '';
+    zoomResetBtn.textContent = Math.round(zoomLevel * 100) + '%';
+  }
+
+  zoomInBtn.addEventListener('click', () => setZoom(zoomLevel + 0.25));
+  zoomOutBtn.addEventListener('click', () => setZoom(zoomLevel - 0.25));
+  zoomResetBtn.addEventListener('click', () => setZoom(1));
+
+  flipbookWrap.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    setZoom(zoomLevel + (e.deltaY < 0 ? 0.15 : -0.15));
+  }, { passive: false });
+
+  document.getElementById('flipbook').addEventListener('dblclick', () => {
+    setZoom(zoomLevel > 1 ? 1 : 1.8);
+  });
 
   function smoothScrollTo(targetY, duration) {
     const startY = window.scrollY;
@@ -1508,49 +1565,15 @@
     triggerPageWipe(() => setLang(lang));
   }
 
-  function setTitleLetters(text) {
-    const titleEl = document.getElementById('cover-title');
-    titleEl.innerHTML = '';
-    text.split('').forEach(ch => {
-      const span = document.createElement('span');
-      span.className = 'title-letter';
-      span.textContent = ch;
-      titleEl.appendChild(span);
-    });
-  }
-
-  function updateCoverTitle(newText) {
-    const titleEl = document.getElementById('cover-title');
-    const spans = Array.from(titleEl.querySelectorAll('.title-letter'));
-    const currentText = spans.map(s => s.textContent).join('');
-
-    if (currentText === newText) return;
-
-    if (currentText === 'Portfolijo' && newText === 'Portfolio') {
-      const jSpan = spans[8];
-      if (jSpan) {
-        jSpan.classList.add('letter-out');
-        setTimeout(() => jSpan.remove(), 820);
-        return;
-      }
-    }
-
-    if (currentText === 'Portfolio' && newText === 'Portfolijo') {
-      const oSpan = spans[8];
-      const jSpan = document.createElement('span');
-      jSpan.className = 'title-letter letter-in-start';
-      jSpan.textContent = 'j';
-      if (oSpan) {
-        titleEl.insertBefore(jSpan, oSpan);
-      } else {
-        titleEl.appendChild(jSpan);
-      }
-      void jSpan.offsetWidth;
-      requestAnimationFrame(() => jSpan.classList.remove('letter-in-start'));
-      return;
-    }
-
-    setTitleLetters(newText);
+  function prefetchOtherLangPdf(lang) {
+    const otherLang = lang === 'si' ? 'en' : 'si';
+    const id = 'prefetch-pdf-' + otherLang;
+    if (document.getElementById(id)) return;
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = files[otherLang];
+    link.id = id;
+    document.head.appendChild(link);
   }
 
   function setLang(lang) {
@@ -1562,9 +1585,10 @@
     }
     currentLang = lang;
     try { localStorage.setItem('lang', lang); } catch (e) {}
+    prefetchOtherLangPdf(lang);
     document.getElementById('download-link').href = files[lang];
     document.getElementById('cover-subtitle').textContent = subtitles[lang];
-    updateCoverTitle(titles[lang]);
+    document.getElementById('cover-title').textContent = titles[lang];
     document.getElementById('btn-si').classList.toggle('active', lang === 'si');
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
     document.documentElement.lang = lang;
