@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="sl">
 <head>
 <meta charset="UTF-8">
@@ -559,6 +559,15 @@
     margin: 0.25rem 0;
   }
 
+  .cv-line-bullet {
+    padding-left: 1.1em;
+    text-indent: -1.1em;
+  }
+
+  .cv-bullet {
+    font-weight: 900;
+  }
+
   @media (max-width: 780px) {
     .cv-grid {
       grid-template-columns: 1fr;
@@ -1088,7 +1097,7 @@
 
     <div class="cv-grid">
       <div class="cv-left">
-        <img class="cv-photo" src="osebna-slika-1.jpg" alt="Gašper Uršič" loading="lazy">
+        <img class="cv-photo" src="osebna-slika-2.png" alt="Gašper Uršič" loading="lazy">
         <div class="cv-about">
           <h3 id="cv-h-about">O meni</h3>
           <p id="cv-about-text"></p>
@@ -1321,6 +1330,20 @@
   let builtLang = null;
   const pdfImageCache = {};
 
+  async function mapWithConcurrency(items, limit, fn) {
+    const results = new Array(items.length);
+    let index = 0;
+    async function worker() {
+      while (index < items.length) {
+        const current = index++;
+        results[current] = await fn(items[current]);
+      }
+    }
+    const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
+    await Promise.all(workers);
+    return results;
+  }
+
   async function buildFlipbook(lang) {
     if (pdfBuilding) return;
     if (builtLang === lang && flipInstance) return;
@@ -1343,12 +1366,10 @@
       } else {
         await workerReady;
         const pdf = await pdfjsLib.getDocument(files[lang]).promise;
-        images = [];
         const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1.5), 2.5);
-        pageW = 480;
-        pageH = 640;
+        const pageNumbers = Array.from({ length: pdf.numPages }, (_, i) => i + 1);
 
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const pageResults = await mapWithConcurrency(pageNumbers, 4, async (pageNum) => {
           const page = await pdf.getPage(pageNum);
           const baseViewport = page.getViewport({ scale: 1 });
           const targetWidth = 1100;
@@ -1361,39 +1382,33 @@
           const ctx = canvas.getContext('2d');
           await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-          images.push(canvas.toDataURL('image/jpeg', 0.9));
+          return { dataUrl: canvas.toDataURL('image/jpeg', 0.9), baseViewport };
+        });
 
-          if (pageNum === 1) {
-            const ratio = baseViewport.height / baseViewport.width;
-            pageW = 480;
-            pageH = Math.round(pageW * ratio);
-          }
-        }
+        images = pageResults.map(r => r.dataUrl);
+        const ratio = pageResults[0].baseViewport.height / pageResults[0].baseViewport.width;
+        pageW = 480;
+        pageH = Math.round(pageW * ratio);
 
         pdfImageCache[lang] = { images, pageW, pageH };
       }
 
-      if (flipInstance) {
-        try { flipInstance.destroy(); } catch (e) {}
-        flipInstance = null;
-        flipEl.innerHTML = '';
+      if (!flipInstance) {
+        if (!window.St || !window.St.PageFlip) throw new Error('page-flip unavailable');
+        flipInstance = new window.St.PageFlip(flipEl, {
+          width: pageW,
+          height: pageH,
+          size: 'stretch',
+          minWidth: 260,
+          maxWidth: 900,
+          minHeight: 340,
+          maxHeight: 1200,
+          maxShadowOpacity: 0.55,
+          showCover: true,
+          mobileScrollSupport: true,
+          useMouseEvents: true
+        });
       }
-
-      if (!window.St || !window.St.PageFlip) throw new Error('page-flip unavailable');
-
-      flipInstance = new window.St.PageFlip(flipEl, {
-        width: pageW,
-        height: pageH,
-        size: 'stretch',
-        minWidth: 260,
-        maxWidth: 900,
-        minHeight: 340,
-        maxHeight: 1200,
-        maxShadowOpacity: 0.55,
-        showCover: true,
-        mobileScrollSupport: true,
-        useMouseEvents: true
-      });
 
       flipInstance.loadFromImages(images);
       builtLang = lang;
@@ -1459,7 +1474,14 @@
   function fillLines(prefix, arr) {
     arr.forEach((text, i) => {
       const el = document.getElementById(prefix + '-' + (i + 1));
-      if (el) el.textContent = text;
+      if (!el) return;
+      if (text.startsWith('• ')) {
+        el.classList.add('cv-line-bullet');
+        el.innerHTML = '<span class="cv-bullet">•</span> ' + text.slice(2);
+      } else {
+        el.classList.remove('cv-line-bullet');
+        el.textContent = text;
+      }
     });
   }
 
@@ -1473,6 +1495,16 @@
 
   function switchLang(lang) {
     if (lang === currentLang) return;
+
+    if (document.getElementById('panel-portfolio').classList.contains('active')) {
+      try {
+        localStorage.setItem('lang', lang);
+        sessionStorage.setItem('skipIntro', '1');
+      } catch (e) {}
+      location.reload();
+      return;
+    }
+
     triggerPageWipe(() => setLang(lang));
   }
 
@@ -1633,6 +1665,16 @@
     const nameEl = document.getElementById('intro-name');
     const titleEl = document.getElementById('intro-title');
     const cvEl = document.getElementById('intro-cv');
+
+    let skipIntro = false;
+    try { skipIntro = sessionStorage.getItem('skipIntro') === '1'; } catch (e) {}
+
+    if (skipIntro) {
+      try { sessionStorage.removeItem('skipIntro'); } catch (e) {}
+      overlay.style.display = 'none';
+      document.body.classList.add('loaded');
+      return;
+    }
 
     setTimeout(() => nameEl.classList.add('show'), 500);
     setTimeout(() => titleEl.classList.add('show'), 940);
